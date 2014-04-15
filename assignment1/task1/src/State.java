@@ -5,7 +5,10 @@ class State extends GlobalSimulation{
 	
 	// Here follows the state variables and other variables that might be needed
 	// e.g. for measurements
-	public int numberInQueue = 0, accumulated = 0, noMeasurements = 0;
+	public int interArrivalTime = 1; //interarrival time for Q1 
+	public int nbrInQ1 = 0, nbrInQ2 = 0, totNbrInQ2 = 0,  nbrMeasurements = 0, 
+			nbrRejected = 0, nbrServed = 0;
+	public boolean Q1busy = false, Q2busy = false;
 
 	Random slump = new Random(); // This is just a random number generator
 	
@@ -16,6 +19,9 @@ class State extends GlobalSimulation{
 		switch (x.eventType){
 			case ARRIVAL:
 				arrival();
+				break;
+			case QUEUECHANGE:
+				queueChange();
 				break;
 			case READY:
 				ready();
@@ -38,6 +44,9 @@ class State extends GlobalSimulation{
 		insertEvent(ARRIVAL, time + 2.5*slump.nextDouble());
 	}
 	
+	private void queueChange(){
+		
+	}
 	private void ready(){
 		numberInQueue--;
 		if (numberInQueue > 0)
