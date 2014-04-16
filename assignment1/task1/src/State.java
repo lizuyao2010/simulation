@@ -12,6 +12,12 @@ class State extends GlobalSimulation{
 
 	Random slump = new Random(); // This is just a random number generator
 	
+	//Function to pick a random number from an exponential distribution with 
+	//mean mu 
+	public double expRandom(double mu){
+		double u = slump.nextDouble();
+		return -1*mu*Math.log(1-u);
+	}
 	
 	// The following method is called by the main program each time a new event has been fetched
 	// from the event list in the main loop. 
@@ -39,12 +45,11 @@ class State extends GlobalSimulation{
 	
 	private void arrival(){
 		nbrCustomers++;
-		
 		if(nbrInQ1 >= 10){ // ev >= 11
 			nbrRejected++;
 		}
 		else if(nbrInQ1 == 0 && !Q1busy){
-			insertEvent(QUEUECHANGE, time + 2*slump.nextDouble()); //byt mot exponentiell tid
+			insertEvent(QUEUECHANGE, time + expRandom(2.1));
 			Q1busy = true;
 		}else {
 			nbrInQ1++;
@@ -55,23 +60,31 @@ class State extends GlobalSimulation{
 	private void queueChange(){
 		if(nbrInQ1 > 0){
 			//minska nbrInQ1 och schemalägg ny queueChange
+			nbrInQ1 --;
+			insertEvent(QUEUECHANGE, time + expRandom(2.1)); 			
+		}else{
+			Q1busy = false;
 		}
 		if(Q2busy){
-			//öka nbrInQ2
+			nbrInQ2++;
 		} else{
 			//schemalägg ny ready
+			insertEvent(READY, time + 2);
+			Q2busy = true;
 		}
 	}
-	private void ready(){//fel
-		Q2busy = true;
-		if (nbrInQ2 > 0)
+	private void ready(){
+		if (nbrInQ2 > 0){
 			nbrInQ2 --;
 			insertEvent(READY, time + 2);
+		}else{
+			Q2busy = false;
+		}
 	}
 	
 	private void measure(){
-		//accumulated = accumulated + numberInQueue;
-		//noMeasurements++;
-		insertEvent(MEASURE, time + slump.nextDouble()*10);
+		totNbrInQ2 += nbrInQ2; //räkna med den som är servern?
+		nbrMeasurements++;
+		insertEvent(MEASURE, time + expRandom(5));
 	}
 }
