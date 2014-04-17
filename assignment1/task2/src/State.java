@@ -3,11 +3,10 @@ import java.util.*;
 class State extends GlobalSimulation{
 	
 	// Here follows the state variables and other variables that might be needed
-	// e.g. for measurements
-	public int interArrivalTime = 1; //interarrival time for Q1 
-	public int nbrInQ1 = 0, nbrInQ2 = 0, totNbrInQ2 = 0,  nbrMeasurements = 0, 
-			nbrRejected = 0, nbrCustomers = 0;
-	public boolean Q1busy = false, Q2busy = false;
+	// e.g. for measurements 
+	public double xA = 0.002, xB = 0.004, lambda = 1.0/150, d = 1;
+	public int nbrAinQ = 0, nbrBinQ = 0, nbrSamples = 0;
+	public boolean Qbusy = false;
 
 	Random slump = new Random(); // This is just a random number generator
 	
@@ -22,11 +21,13 @@ class State extends GlobalSimulation{
 	// from the event list in the main loop. 
 	public void treatEvent(Event x){
 		switch (x.eventType){
-			case ARRIVAL:
-				arrival();
+			case ARRIVALA:
+				arrivalA();
 				break;
-			case QUEUECHANGE:
-				queueChange();
+			case DELAY:
+				delay();
+			case ARRIVALB:
+				arrivalB();
 				break;
 			case READY:
 				ready();
@@ -42,48 +43,38 @@ class State extends GlobalSimulation{
 	// have been placed in the case in treatEvent, but often it is simpler to write a method if 
 	// things are getting more complicated than this.
 	
-	private void arrival(){
-		nbrCustomers++;
-		if(nbrInQ1 >= 10){ // ev >= 11
-			nbrRejected++;
+	private void arrivalA(){
+		if(Qbusy){
+			nbrAinQ++;
+		}else{
+			Qbusy = true;
+			insertEvent(DELAY, time + xA);
 		}
-		else if(nbrInQ1 == 0 && !Q1busy){
-			insertEvent(QUEUECHANGE, time + expRandom(2.1));
-			Q1busy = true;
-		}else {
-			nbrInQ1++;
-		}
-		insertEvent(ARRIVAL, time + interArrivalTime);
+		
+		insertEvent(ARRIVALA, time + expRandom(1/lambda));
 	}
 	
-	private void queueChange(){
-		if(nbrInQ1 > 0){
-			//minska nbrInQ1 och schemalägg ny queueChange
-			nbrInQ1 --;
-			insertEvent(QUEUECHANGE, time + expRandom(2.1)); 			
+	private void delay(){
+		insertEvent(ARRIVALB, time + d);
+		if(nbrBinQ > 0){
+			insertEvent(READY, time + xB);
+			nbrBinQ --;
+		} 
+		else if(nbrAinQ > 0){
+			insertEvent(DELAY, time + xA);
+			nbrAinQ --;
 		}else{
-			Q1busy = false;
-		}
-		if(Q2busy){
-			nbrInQ2++;
-		} else{
-			//schemalägg ny ready
-			insertEvent(READY, time + 2);
-			Q2busy = true;
+			Qbusy = false;
 		}
 	}
+	private void arrivalB(){
+		
+	}
 	private void ready(){
-		if (nbrInQ2 > 0){
-			nbrInQ2 --;
-			insertEvent(READY, time + 2);
-		}else{
-			Q2busy = false;
-		}
+	
 	}
 	
 	private void measure(){
-		totNbrInQ2 += nbrInQ2; //räkna med den som är servern?
-		nbrMeasurements++;
-		insertEvent(MEASURE, time + expRandom(5));
+	
 	}
 }

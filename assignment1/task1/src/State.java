@@ -1,10 +1,9 @@
 import java.util.*;
-import java.io.*;
 
 class State extends GlobalSimulation{
 	
-	// Here follows the state variables and other variables that might be needed
-	// e.g. for measurements
+	/* Here follows the state variables and other variables that might be needed
+	 e.g. for measurements*/
 	public int interArrivalTime = 1; //interarrival time for Q1 
 	public int nbrInQ1 = 0, nbrInQ2 = 0, totNbrInQ2 = 0,  nbrMeasurements = 0, 
 			nbrRejected = 0, nbrCustomers = 0;
@@ -12,13 +11,12 @@ class State extends GlobalSimulation{
 
 	Random slump = new Random(); // This is just a random number generator
 	
-	//Function to pick a random number from an exponential distribution with 
-	//mean mu 
+	/*Function to pick a random number from an exponential distribution with 
+	mean mu*/ 
 	public double expRandom(double mu){
 		double u = slump.nextDouble();
 		return -1*mu*Math.log(1-u);
 	}
-	
 	// The following method is called by the main program each time a new event has been fetched
 	// from the event list in the main loop. 
 	public void treatEvent(Event x){
