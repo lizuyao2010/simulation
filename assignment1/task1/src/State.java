@@ -4,7 +4,7 @@ class State extends GlobalSimulation{
 	
 	/* Here follows the state variables and other variables that might be needed
 	 e.g. for measurements*/
-	public int interArrivalTime = 1; //interarrival time for Q1 
+	public int interArrivalTime = 5; //interarrival time for Q1 
 	public int nbrInQ1 = 0, nbrInQ2 = 0, totNbrInQ2 = 0,  nbrMeasurements = 0, 
 			nbrRejected = 0, nbrCustomers = 0;
 	public boolean Q1busy = false, Q2busy = false;
@@ -43,7 +43,7 @@ class State extends GlobalSimulation{
 	
 	private void arrival(){
 		nbrCustomers++;
-		if(nbrInQ1 >= 10){ // ev >= 11
+		if(nbrInQ1 >= 10){
 			nbrRejected++;
 		}
 		else if(nbrInQ1 == 0 && !Q1busy){
@@ -57,7 +57,6 @@ class State extends GlobalSimulation{
 	
 	private void queueChange(){
 		if(nbrInQ1 > 0){
-			//minska nbrInQ1 och schemalägg ny queueChange
 			nbrInQ1 --;
 			insertEvent(QUEUECHANGE, time + expRandom(2.1)); 			
 		}else{
@@ -66,7 +65,6 @@ class State extends GlobalSimulation{
 		if(Q2busy){
 			nbrInQ2++;
 		} else{
-			//schemalägg ny ready
 			insertEvent(READY, time + 2);
 			Q2busy = true;
 		}

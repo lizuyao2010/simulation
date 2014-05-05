@@ -4,9 +4,9 @@ class State extends GlobalSimulation{
 	
 	// Here follows the state variables and other variables that might be needed
 	// e.g. for measurements
-	public int interArrivalTime = 1; //interarrival time for Q1 
-	public int nbrInQ1 = 0, nbrInQ2 = 0, totNbrInQ2 = 0,  nbrMeasurements = 0, 
-			nbrRejected = 0, nbrCustomers = 0;
+	public double interArrivalTime = 1.1; //interarrival time for Q1 
+	public int nbrInQ1 = 0, nbrInQ2 = 0, totNbrInQ = 0,  nbrMeasurements = 0, 
+			nbrCustomers = 0;
 	public boolean Q1busy = false, Q2busy = false;
 
 	Random slump = new Random(); // This is just a random number generator
@@ -44,11 +44,9 @@ class State extends GlobalSimulation{
 	
 	private void arrival(){
 		nbrCustomers++;
-		if(nbrInQ1 >= 10){ // ev >= 11
-			nbrRejected++;
-		}
-		else if(nbrInQ1 == 0 && !Q1busy){
-			insertEvent(QUEUECHANGE, time + expRandom(2.1));
+		
+		if(nbrInQ1 == 0 && !Q1busy){
+			insertEvent(QUEUECHANGE, time + expRandom(1));
 			Q1busy = true;
 		}else {
 			nbrInQ1++;
@@ -58,31 +56,29 @@ class State extends GlobalSimulation{
 	
 	private void queueChange(){
 		if(nbrInQ1 > 0){
-			//minska nbrInQ1 och schemalägg ny queueChange
 			nbrInQ1 --;
-			insertEvent(QUEUECHANGE, time + expRandom(2.1)); 			
+			insertEvent(QUEUECHANGE, time + expRandom(1)); 			
 		}else{
 			Q1busy = false;
 		}
 		if(Q2busy){
 			nbrInQ2++;
 		} else{
-			//schemalägg ny ready
-			insertEvent(READY, time + 2);
+			insertEvent(READY, time + expRandom(1));
 			Q2busy = true;
 		}
 	}
 	private void ready(){
 		if (nbrInQ2 > 0){
 			nbrInQ2 --;
-			insertEvent(READY, time + 2);
+			insertEvent(READY, time + expRandom(1));
 		}else{
 			Q2busy = false;
 		}
 	}
 	
 	private void measure(){
-		totNbrInQ2 += nbrInQ2; //räkna med den som är servern?
+		totNbrInQ = totNbrInQ + nbrInQ1 +  nbrInQ2; //räkna med den som är servern?
 		nbrMeasurements++;
 		insertEvent(MEASURE, time + expRandom(5));
 	}

@@ -1,9 +1,11 @@
+import java.io.IOException;
 import java.util.*;
 
 class State extends GlobalSimulation{
 	
 	// Here follows the state variables and other variables that might be needed
-	// e.g. for measurements 
+	// e.g. for measurements
+	public int version = 0;
 	public double xA = 0.002, xB = 0.004, lambda = 150, d = 1;
 	public int nbrAinQ = 0, nbrBinQ = 0, nbrSamples = 0, totNbrJobs = 0, testerA = 0, testerB = 0;
 	public boolean Qbusy = false;
@@ -51,67 +53,85 @@ class State extends GlobalSimulation{
 			Qbusy = true;
 			insertEvent(DELAY, time + xA);
 		}
-		insertEvent(ARRIVALA, time + expRandom((1/lambda)));
+		insertEvent(ARRIVALA, time + expRandom((1.0/lambda)));
+		
 	}
 	
 	private void delay(){
-		insertEvent(ARRIVALB, time + d); //task 1 & 3
-		//insertEvent(ARRIVALB, time + expRandom(d)); //task 2
-		
-		if(nbrBinQ > 0){
-			insertEvent(READY, time + xB);
-			nbrBinQ --;
-		} 
-		else if(nbrAinQ > 0){
-			insertEvent(DELAY, time + xA);
-			nbrAinQ --; 
-/*		if(nbrAinQ >0){
-			insertEvent(DELAY, time + xA);
-			nbrAinQ --;
+		if(version == 1 || version == 3){
+			insertEvent(ARRIVALB, time + d); //task 1 & 3
+		}else{	
+			insertEvent(ARRIVALB, time + expRandom(d)); //task 2
 		}
-		else if(nbrBinQ >0){
-			insertEvent(READY, time + xB);
-			nbrBinQ --;*/
-		}else{
-			Qbusy = false;
+		if(version == 1 || version == 2){//B has higher priority
+			if(nbrBinQ > 0){
+				insertEvent(READY, time + xB);
+				nbrBinQ --;
+			} 
+			else if(nbrAinQ > 0){
+				insertEvent(DELAY, time + xA);
+				nbrAinQ --; 
+			}else{
+				Qbusy = false;
+			}
+		}else{ //A has higher priority
+			if(nbrAinQ >0){
+				insertEvent(DELAY, time + xA);
+				nbrAinQ --;
+			}
+			else if(nbrBinQ >0){
+				insertEvent(READY, time + xB);
+				nbrBinQ --;
+			}else{
+				Qbusy = false;
+			}
+
 		}
 	}
 	private void arrivalB(){
 		testerB++;
 		if(Qbusy){
 			nbrBinQ++;
-//			System.out.println("test");
 		}else{
 			Qbusy = true;
 			insertEvent(READY, time+xB);
 		}
 	}
 	private void ready(){
-		if(nbrBinQ > 0){
-			insertEvent(READY, time + xB);
-			nbrBinQ --;
-		} 
-		else if(nbrAinQ > 0){
-			insertEvent(DELAY, time + xA);
-			nbrAinQ --;
-		
-/*		if(nbrAinQ >0){
-			insertEvent(DELAY, time + xA);
-			nbrAinQ --;
-		}
-		else if(nbrBinQ >0){
-			insertEvent(READY, time + xB);
-			nbrBinQ --;*/
+		if(version == 1 || version == 2){
+			if(nbrBinQ > 0){
+				insertEvent(READY, time + xB);
+				nbrBinQ --;
+			} 
+			else if(nbrAinQ > 0){
+				insertEvent(DELAY, time + xA);
+				nbrAinQ --; 
+			}else{
+				Qbusy = false;
+			}
 		}else{
-			Qbusy = false;
+			if(nbrAinQ >0){
+				insertEvent(DELAY, time + xA);
+				nbrAinQ --;
+			}
+			else if(nbrBinQ >0){
+				insertEvent(READY, time + xB);
+				nbrBinQ --;
+			}else{
+				Qbusy = false;
+			}
 		}
 	}
 	
 	private void measure(){
 		totNbrJobs = totNbrJobs + nbrAinQ + nbrBinQ;
-		//System.out.print(" " + nbrBinQ);
-		//System.out.println("B: " + nbrBinQ);
 		nbrSamples++;
 		insertEvent(MEASURE, time + 0.1);
+		try {
+			GlobalSimulation.writer.write(totNbrJobs + " ");
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
 	}
 }

@@ -1,3 +1,6 @@
+import java.io.FileOutputStream;
+import java.io.Writer;
+
 public class GlobalSimulation{
 	
 	// This class contains the definition of the events that shall take place in the
@@ -11,4 +14,6 @@ public class GlobalSimulation{
 	public static void insertEvent(int type, double TimeOfEvent){  // Just to be able to skip dot notation
 		eventList.InsertEvent(type, TimeOfEvent);
 	}
+	public static FileOutputStream output;
+    public static Writer writer;
 }
