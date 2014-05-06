@@ -32,6 +32,7 @@ public class MainSimulation extends Global{
     	SignalList.SendSignal(READY, Generator, time);
     	SignalList.SendSignal(MEASURE, qsList.get(0), time);
 
+        int index = 0;
 
     	// This is the main loop
 
@@ -39,9 +40,36 @@ public class MainSimulation extends Global{
     		actSignal = SignalList.FetchSignal();
     		time = actSignal.arrivalTime;
             if (actSignal.destination==Generator)
-            {   
-                int index = genNum.nextInt(qsList.size());
-                Generator.sendTo = qsList.get(index);   
+            {
+                if (args[0].equals("Random"))
+                {
+                    index = genNum.nextInt(qsList.size());
+                    Generator.sendTo = qsList.get(index);
+                }
+                else if (args[0].equals("Round"))
+                {
+                    index = (index+1)%qsList.size();
+                    Generator.sendTo = qsList.get(index);
+                }
+                else if (args[0].equals("smallest"))
+                {
+                    double min = Double.POSITIVE_INFINITY;
+                    QS minque = null;
+                    for (int i=0; i<qsList.size(); i++)
+                    {
+                        if (qsList.get(i).numberInQueue < min)
+                        {
+                            minque = qsList.get(i);
+                            min = qsList.get(i).numberInQueue;
+                        }
+                    }
+                    Generator.sendTo = minque;
+                }
+                else
+                {
+                    Generator.sendTo = qsList.get(0);
+                }  
+                   
             }
     		actSignal.destination.TreatSignal(actSignal);
     	}
