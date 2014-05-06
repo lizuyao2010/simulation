@@ -1,0 +1,69 @@
+import java.util.*;
+import java.io.*;
+
+class State extends GlobalSimulation{
+	
+	// Here follows the state variables and other variables that might be needed
+	// e.g. for measurements
+	public int interArrivalTime = 1; //interarrival time for Q1 
+	public int nbrInQ1 = 0, nbrInQ2 = 0, totNbrInQ2 = 0,  nbrMeasurements = 0, 
+			nbrRejected = 0, nbrCustomers = 0;
+	public boolean Q1busy = false, Q2busy = false;
+
+	Random slump = new Random(); // This is just a random number generator
+	
+	
+	// The following method is called by the main program each time a new event has been fetched
+	// from the event list in the main loop. 
+	public void treatEvent(Event x){
+		switch (x.eventType){
+			case ARRIVAL:
+				arrival();
+				break;
+			case QUEUECHANGE:
+				queueChange();
+				break;
+			case READY:
+				ready();
+				break;
+			case MEASURE:
+				measure();
+				break;
+		}
+	}
+	
+	
+	// The following methods defines what should be done when an event takes place. This could
+	// have been placed in the case in treatEvent, but often it is simpler to write a method if 
+	// things are getting more complicated than this.
+	
+	private void arrival(){
+		nbrCustomers++;
+		
+		if(nbrInQ1 >= 10){ // ev >= 11
+			nbrRejected++;
+		}
+		else if(nbrInQ1 == 0 && !Q1busy){
+			insertEvent(READY, time + 2*slump.nextDouble());
+			Q1busy = true;
+		}else {
+			nbrInQ1++;
+		}
+		insertEvent(ARRIVAL, time + interArrivalTime);
+	}
+	
+	private void queueChange(){
+		
+	}
+	private void ready(){
+		nbrInQ2--;
+		if (nbrInQ2 > 0)
+			insertEvent(READY, time + 2*slump.nextDouble());
+	}
+	
+	private void measure(){
+		//accumulated = accumulated + numberInQueue;
+		//noMeasurements++;
+		insertEvent(MEASURE, time + slump.nextDouble()*10);
+	}
+}
