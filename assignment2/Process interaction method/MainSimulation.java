@@ -54,16 +54,16 @@ public class MainSimulation extends Global{
                 else if (args[0].equals("smallest"))
                 {
                     double min = Double.POSITIVE_INFINITY;
-                    QS minque = null;
+                    index = -1;
                     for (int i=0; i<qsList.size(); i++)
                     {
                         if (qsList.get(i).numberInQueue < min)
                         {
-                            minque = qsList.get(i);
+                            index = i;
                             min = qsList.get(i).numberInQueue;
                         }
                     }
-                    Generator.sendTo = minque;
+                    Generator.sendTo = qsList.get(index);
                 }
                 else
                 {
@@ -75,7 +75,12 @@ public class MainSimulation extends Global{
     	}
 
     	//Finally the result of the simulation is printed below:
-
+        int accumulated=0,noMeasurements=0;
+        for (int i=0; i<qsList.size(); i++)
+        {
+            accumulated+=qsList.get(i).accumulated;
+            noMeasurements+=qsList.get(i).noMeasurements;
+        }
     	System.out.println("Mean number of customers in queuing system: " + 1.0*qsList.get(0).accumulated/qsList.get(0).noMeasurements);
 
     }
