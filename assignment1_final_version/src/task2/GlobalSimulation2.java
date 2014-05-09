@@ -1,0 +1,25 @@
+package task2;
+
+import java.io.FileOutputStream;
+import java.io.Writer;
+
+import eventSchedulingMethod.EventListClass;
+
+public class GlobalSimulation2{
+	
+	// This class contains the definition of the events that shall take place in the
+	// simulation. It also contains the global time, the event list and also a method
+	// for insertion of events in the event list. That is just for making the code in
+	// MainSimulation.java and State.java simpler (no dot notation is needed).
+	
+	public static final int ARRIVALA = 1, DELAY = 2, ARRIVALB = 3, READY = 4, MEASURE = 5; // The events
+	public static double time = 0; // The global time variable
+	public static EventListClass eventList = new EventListClass(); // The event list used in the program
+	public static void insertEvent(int type, double TimeOfEvent){  // Just to be able to skip dot notation
+		eventList.InsertEvent(type, TimeOfEvent);
+	}
+	
+	//To be able to write result to file
+	public static FileOutputStream job_output;
+    public static Writer job_writer;
+}
