@@ -8,13 +8,21 @@ class QS extends Proc{
 	public Proc sendTo;
 	Random slump = new Random();
 
+	/*Function to pick a random number from an exponential distribution with 
+	mean mu*/ 
+	public double expRandom(double mu){
+		double u = slump.nextDouble();
+		return -1*mu*Math.log(1-u);
+	}
+
 	public void TreatSignal(Signal x){
 		switch (x.signalType){
 
 			case ARRIVAL:{
 				numberInQueue++;
 				if (numberInQueue == 1){
-					SignalList.SendSignal(READY,this, time + 0.2*slump.nextDouble());
+					double waittime=expRandom(0.5);
+					SignalList.SendSignal(READY,this, time + waittime);
 				}
 			} break;
 
@@ -24,7 +32,8 @@ class QS extends Proc{
 					SignalList.SendSignal(ARRIVAL, sendTo, time);
 				}
 				if (numberInQueue > 0){
-					SignalList.SendSignal(READY, this, time + 0.2*slump.nextDouble());
+					double waittime=expRandom(0.5);
+					SignalList.SendSignal(READY, this, time + waittime);
 				}
 			} break;
 

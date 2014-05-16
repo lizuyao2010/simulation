@@ -24,13 +24,13 @@ public class MainSimulation extends Global{
         Random genNum = new Random();
 
     	Gen Generator = new Gen();
-    	Generator.lambda = 9;  //Generator shall generate 9 customers per second
+    	Generator.lambda = 1/0.12;  //Generator shall generate 9 customers per second
     	Generator.sendTo = null;   // The generated customers shall be sent to Q1
 
     	//To start the simulation the first signals are put in the signal list
 
     	SignalList.SendSignal(READY, Generator, time);
-    	SignalList.SendSignal(MEASURE, qsList.get(0), time);
+    	SignalList.SendSignal(MEASURE, qsList.get(1), time);
 
         int index = 0;
 
@@ -81,7 +81,7 @@ public class MainSimulation extends Global{
             accumulated+=qsList.get(i).accumulated;
             noMeasurements+=qsList.get(i).noMeasurements;
         }
-    	System.out.println("Mean number of customers in queuing system: " + 1.0*qsList.get(0).accumulated/qsList.get(0).noMeasurements);
+    	System.out.println("Mean number of customers in queuing system: " + 1.0*qsList.get(1).accumulated/qsList.get(1).noMeasurements);
 
     }
 }

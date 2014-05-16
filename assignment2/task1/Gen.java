@@ -12,6 +12,8 @@ class Gen extends Proc{
 	public Proc sendTo;    //Where to send customers
 	public double lambda;  //How many to generate per second
 
+	
+
 	 //What to do when a signal arrives
 	public void TreatSignal(Signal x){
 		switch (x.signalType){
