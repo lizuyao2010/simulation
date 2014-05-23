@@ -3,7 +3,7 @@ public class Algorithm {
 
 	
 	//problem
-	public int m = 50;
+	public int m = 10;
 	public int[] weights = {5, 7, 4, 3};
 	public int[] revenues = {8, 11, 6, 4};
 	public int maxWeight = 14;
@@ -18,13 +18,15 @@ public class Algorithm {
 	}
 	public void run(){
 		long time = System.currentTimeMillis();
+		
+		//expanding the problem if required
 		if(m != 1){
 			expandProblem(m);
 		}
-		
-		//choose initial solution
+
+		//choose initial solution and currently best solution to only zeros
 		int[] x = new int [SIZE];
-		int[] bestSoFar = x;
+		int[] bestSoFar = new int[SIZE];
 		
 		//parameters
 		double t = 100;
@@ -36,9 +38,9 @@ public class Algorithm {
 			int count = 0;
 			while(count < L){
 				
-				//choose random neighbour y to x
-				int [] y = neighbour(x);
-	
+				//choose random neighbor y to x		
+				int[] y = neighbor(x);
+				//int [] y = slowNeighbor(x);
 				
 				int deltaF = revenue(x) - revenue(y);
 				if(deltaF <= 0){
@@ -47,7 +49,7 @@ public class Algorithm {
 					x = y;
 				}
 				if(revenue(x) > revenue(bestSoFar)){
-					bestSoFar = x;
+					bestSoFar = copy(x);
 				}
 				
 				count ++;
@@ -97,12 +99,100 @@ public class Algorithm {
 		}
 		return sum;
 	}
-	
 	/*
-	 * Return a random neighbour to the input vector
+	 * Return a random neighbor to the input vector, fast version
+	 * which neighbor to pick is calculated and no other neighbors are saved
 	 */
-	private int [] neighbour(int [] vector){
-		List<int []> neighbourList = new ArrayList<int []>();
+	private int [] neighbor(int [] vector){
+		int [] cur = null;
+		
+		//calculate nbr of ones and zeros in vector
+		int nbrZeros = 0;
+		for(int i: vector){
+			if(i == 0){
+				nbrZeros++;
+			}
+		}
+		int nbrOnes = SIZE - nbrZeros;
+		
+		//nbr of ways to add, delete and replace
+		int nbrCombos = nbrZeros + nbrOnes + nbrZeros*nbrOnes; 
+		
+		while(cur == null){
+			int rand = (int) (nbrCombos*Math.random());
+		
+			if(rand < nbrZeros){ //add
+				int index = -1;
+				int nbrZerosFound = 0;
+				
+				//finding index for the zero that should be turned into a one
+				while(nbrZerosFound <= rand){
+					index++;
+					if(vector[index] == 0){
+						nbrZerosFound++;
+					}
+				}
+				cur = copy(vector);
+				cur[index] = 1;
+				if(weight(cur) > maxWeight){ //too heavy after add
+					cur = null;
+				}
+				
+			} else if(rand < nbrZeros+ nbrOnes){	//delete
+				int index = -1;
+				int nbrOnesFound = 0;
+				
+				//finding index for the one that should be turned into a zero
+				while(nbrOnesFound <= rand-nbrZeros){
+					index++;
+					if(vector[index] == 1){
+						nbrOnesFound++;
+					}
+				}
+				cur = copy(vector);
+				cur[index] = 0;
+				
+			}else{	//replace
+				int nbrZerosFound = 0;
+				int nbrOnesFound = 0;
+				int zeroIndex = -1;
+				int oneIndex = -1;
+				
+				//finding index for the zero that should be turned into a one
+				int zeroToReplace = (rand-nbrZeros-nbrOnes)/nbrOnes;
+				while(nbrZerosFound <= zeroToReplace){
+					zeroIndex++;
+					if(vector[zeroIndex] == 0){
+						nbrZerosFound++;
+			
+					
+					}
+				}
+				
+				//finding index for the one that should be turned into a zero
+				int oneToReplace = (rand-nbrZeros-nbrOnes)%nbrOnes;
+				while(nbrOnesFound <= oneToReplace){
+					oneIndex++;
+					if(vector[oneIndex] == 1){
+						nbrOnesFound++;
+					}
+				}
+				cur = copy(vector);
+				cur[zeroIndex] = 1;
+				cur[oneIndex] = 0;
+				if(weight(cur) > maxWeight){//to heavy after replacement
+					cur = null;
+				}
+			}
+		}
+		return cur;
+	}	
+	/*
+	 * Return a random neighbor to the input vector, slow version
+	 * where all possible neighbors are calculated and placed in a list
+	 */
+	private int [] slowNeighbor(int [] vector){
+		List<int []> neighborList = new ArrayList<int []>();
 		int [] cur = copy(vector);
 		
 		//add
@@ -110,7 +200,7 @@ public class Algorithm {
 			if(vector[i] == 0){
 				cur[i] = 1;
 				if(weight(cur) <= maxWeight){
-					neighbourList.add(cur);
+					neighborList.add(cur);
 				}
 				cur = copy(vector);
 			}
@@ -120,7 +210,7 @@ public class Algorithm {
 		for(int i = 0; i < SIZE; i++){
 			if(vector[i] == 1){
 				cur[i] = 0;
-				neighbourList.add(cur);
+				neighborList.add(cur);
 				cur = copy(vector);
 			}
 		}
@@ -133,7 +223,7 @@ public class Algorithm {
 						cur[i] = 0;
 						cur[j] = 1;
 						if(weight(cur) < maxWeight){
-							neighbourList.add(cur);
+							neighborList.add(cur);
 							cur = copy(vector);
 						}
 					}
@@ -141,8 +231,8 @@ public class Algorithm {
 			}
 		}
 		
-		int random = (int) (neighbourList.size()*Math.random());
-		return neighbourList.get(random);
+		int random = (int) (neighborList.size()*Math.random());
+		return neighborList.get(random);
 	}
 	
 	/*
@@ -162,9 +252,7 @@ public class Algorithm {
 	 */
 	private int [] copy(int [] vector) {
 		int [] copy = new int[SIZE];
-		for(int i = 0; i < SIZE; i++){
-			copy[i] = vector[i];
-		}
+		System.arraycopy(vector, 0, copy, 0, SIZE);
 		return copy;
 	}
 	
