@@ -9,12 +9,8 @@ public class Algorithm {
 	public int maxWeight = 14;
 	public int SIZE = weights.length;
 	
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
 		new Algorithm().run();
-
 	}
 	public void run(){
 		long time = System.currentTimeMillis();
@@ -29,8 +25,8 @@ public class Algorithm {
 		int[] bestSoFar = new int[SIZE];
 		
 		//parameters
-		double t = 100;
-		double tmin = 10;
+		double t = 1094;
+		double tmin = 1.59;
 		int L = 1000;
 		double alpha = 0.95;
 		
@@ -59,6 +55,7 @@ public class Algorithm {
 		System.out.print("Result: ");
 		print(bestSoFar);
 		System.out.println("Total weight: " + weight(bestSoFar));
+        System.out.println("Total revenue: " + revenue(bestSoFar));
 		System.out.println("Execution time: " + (System.currentTimeMillis() - time) + " ms");
 	}
 	
@@ -163,9 +160,7 @@ public class Algorithm {
 				while(nbrZerosFound <= zeroToReplace){
 					zeroIndex++;
 					if(vector[zeroIndex] == 0){
-						nbrZerosFound++;
-			
-					
+						nbrZerosFound++;				
 					}
 				}
 				
