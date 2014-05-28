@@ -12,7 +12,7 @@ public class MainSimulation extends Global{
     	new SignalList();
 
     	// Here process instances are created (two queues and one generator) and their parameters are given values. 
-        ArrayList<QS> qsList = new ArrayList<QS>();
+        //ArrayList<QS> qsList = new ArrayList<QS>();
 
     	
         for (int i=0; i<5 ; i++) 
@@ -24,7 +24,7 @@ public class MainSimulation extends Global{
         Random genNum = new Random();
 
     	Gen Generator = new Gen();
-    	Generator.lambda = 1/0.11;  //Generator shall generate 9 customers per second
+    	Generator.lambda = 1/3.0;  //Generator shall generate 9 customers per second
     	Generator.sendTo = null;   // The generated customers shall be sent to Q1
 
     	//To start the simulation the first signals are put in the signal list
@@ -84,7 +84,7 @@ public class MainSimulation extends Global{
             accumulated+=qsList.get(i).accumulated;
             noMeasurements+=qsList.get(i).noMeasurements;
         }
-    	System.out.println("Mean number of customers in queuing system: " + 1.0*qsList.get(1).accumulated/qsList.get(1).noMeasurements);
+    	System.out.println("Mean number of customers in queuing system: " + 1.0*accumulated/noMeasurements);
 
     }
 }
