@@ -24,14 +24,17 @@ public class MainSimulation extends Global{
         Random genNum = new Random();
 
     	Gen Generator = new Gen();
-    	Generator.lambda = 1/0.12;  //Generator shall generate 9 customers per second
+    	Generator.lambda = 1/0.11;  //Generator shall generate 9 customers per second
     	Generator.sendTo = null;   // The generated customers shall be sent to Q1
 
     	//To start the simulation the first signals are put in the signal list
 
     	SignalList.SendSignal(READY, Generator, time);
-    	SignalList.SendSignal(MEASURE, qsList.get(1), time);
-
+        for (int i=0; i<qsList.size(); i++)
+        {
+            SignalList.SendSignal(MEASURE, qsList.get(i), time);   
+        }
+    	
         int index = 0;
 
     	// This is the main loop
