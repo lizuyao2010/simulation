@@ -10,7 +10,7 @@ class Gen extends Proc{
 
 	//There are two parameters:
 	public Proc sendTo;   //Where to send customers
-	public double lambda;   //How many to generate per second
+	public double lambda;   //How many to generate per hour
 	public double expRandom(double mu){
 		double u = slump.nextDouble();
 		return -1*mu*Math.log(1-u);
@@ -23,8 +23,9 @@ class Gen extends Proc{
 			case READY:{
 				if (time%24>=9 && time%24<=17){
 					SignalList.SendSignal(ARRIVAL, sendTo, time);
+					numberofcustomers++;
 				}
-				SignalList.SendSignal(READY, this, time + expRandom(0.25));
+				SignalList.SendSignal(READY, this, time + expRandom(1.0/lambda));
 			}
 				break;
 		}

@@ -24,7 +24,7 @@ public class MainSimulation extends Global{
         Random genNum = new Random();
 
     	Gen Generator = new Gen();
-    	Generator.lambda = 1/3.0;  //Generator shall generate 9 customers per second
+    	Generator.lambda = 1/2.0;  //Generator shall generate 9 customers per second
     	Generator.sendTo = null;   // The generated customers shall be sent to Q1
 
     	//To start the simulation the first signals are put in the signal list

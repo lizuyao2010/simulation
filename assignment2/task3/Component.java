@@ -10,11 +10,20 @@ class Component extends Proc{
 		switch (x.signalType){
 			case DEAD:{
 				brokenNumber+=1;
+				
 				if (brokenNumber==5) {
-					SignalList.SendSignal(READY, this, time);
+					new SignalList();
+					brokenNumber=0;
+					// print the running time of the system, when it breaks down
 					System.out.println(time-previousTime);
-					previousTime=time;
+					for (int i=0; i<5; i++)
+					{
+						SignalList.SendSignal(READY, cpList.get(i), time);
+					}
+					previousTime = time;
+					 
 				}
+				
 			} break;
 			case READY:{
 				SignalList.SendSignal(DEAD, this, time+1+4*slump.nextDouble());
