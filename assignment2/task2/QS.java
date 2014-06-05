@@ -13,7 +13,8 @@ class QS extends Proc{
 
 			case ARRIVAL:{
 				numberInQueue++;
-				acc_arrival+=time;
+                System.out.println("arrival:"+time%24);
+				acc_arrival+=time%24;
 				if (numberInQueue == 1){
 					SignalList.SendSignal(READY,this, time + 1.0/6+1.0/6*slump.nextDouble());
 				}
@@ -22,7 +23,8 @@ class QS extends Proc{
 			case READY:{
 				if (numberInQueue>0){
 					numberInQueue--;
-					acc_leave+=time;
+                    System.out.println("leave:"+time%24);
+					acc_leave+=time%24;
 				}
 				
 				/*
